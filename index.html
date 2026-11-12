@@ -7,17 +7,6 @@
   <title>MCBE ProxVC - Connect</title>
 
   <!-- Font Awesome & Google Fonts -->
-  <script>
-  window.addEventListener('error', function(e) {
-    if (e.target.tagName === 'SCRIPT' && e.target.src.includes('vendor-modules')) {
-      e.preventDefault();
-      const s = document.createElement('script');
-      s.type = 'module';
-      s.src = './vendor-modules-Cs8TdbD0.js';
-      document.head.appendChild(s);
-    }
-  }, true);
-</script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Silkscreen&display=swap" rel="stylesheet">
 
@@ -32,9 +21,9 @@
     window.adsbygoogle = window.adsbygoogle || [];
   </script>
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="./MCBE ProxVC - Connect_files/connect-CaBubcCo.css">
-  <link rel="stylesheet" href="./MCBE ProxVC - Connect_files/style-CC25_3lO.css">
+  <!-- Stylesheets (Root Level) -->
+  <link rel="stylesheet" href="./connect-CaBubcCo.css">
+  <link rel="stylesheet" href="./style-CC25_3lO.css">
 
   <!-- Hide all Participant UI elements & Adblock Overlays while keeping DOM nodes alive for JS -->
   <style>
@@ -56,8 +45,8 @@
     }
   </style>
 
-  <!-- Main Voice Chat Module (Renamed to .js so GitHub Pages serves it as JavaScript) -->
-  <script type="module" src="./MCBE ProxVC - Connect_files/connect-CzI-A9K_.js"></script>
+  <!-- Main Voice Chat Module (Root Level) -->
+  <script type="module" src="./connect-CzI-A9K_.js"></script>
 </head>
 
 <body class="min-h-screen flex flex-col relative selection:bg-green-500 selection:text-white">
@@ -95,7 +84,6 @@
           <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 space-y-2">
             <p id="id-disp" class="info-text">ID: <span id="my-id" class="text-white"></span></p>
             <p id="name-disp" data-key="nameDisp" class="info-text">GamerTag: <span id="my-name" class="text-white"></span></p>
-            <!-- Kept in DOM for JS, hidden by CSS -->
             <p id="Menber-disp" data-key="menberDisp" class="info-text">Participants: <span id="Members" class="text-white">undefined</span></p>
           </div>
 
@@ -159,14 +147,14 @@
           <div id="button-area"></div>
           <div id="remote-media-area"></div>
 
-          <!-- Participant List (Kept in DOM for JS, hidden by CSS) -->
+          <!-- Participant List (Hidden) -->
           <div id="participant-list-box" class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 overflow-x-auto">
             <h2 id="participant" data-key="participant" class="text-xl font-bold text-gray-200 mb-3">Participant List</h2>
             <ul id="participant-list" class="space-y-2 text-gray-300 w-full"></ul>
           </div>
         </div>
 
-        <!-- Required DOM placeholders so connect.js doesn't throw null errors -->
+        <!-- Required DOM placeholders -->
         <div style="display: none;">
           <h2 id="android-app-title" data-key="androidAppTitle"></h2>
           <span id="android-background" data-key="background"></span>
@@ -190,14 +178,14 @@
     <div class="absolute top-0 left-1/4 w-96 h-96 bg-green-600 rounded-full filter blur-3xl opacity-20"></div>
   </div>
   <nav id="nav" style="display: none;"></nav>
-  <div id="sidebar" style="display: none;"></div>
+  <div id="sidebar" style="display: none;"></nav>
   <footer id="footer" style="display: none;"></footer>
 
-  <!-- Helper Scripts (Renamed to .js) -->
-  <script src="./MCBE ProxVC - Connect_files/msgpack.min.js"></script>
-  <script src="./MCBE ProxVC - Connect_files/vendor-script.js"></script>
+  <!-- Helper Scripts (Root Level) -->
+  <script src="./msgpack.min.js"></script>
+  <script src="./vendor-script.js"></script>
 
-  <!-- Failsafe: Ensures Loading Screen disappears -->
+  <!-- Failsafe Loading Screen Dismissal -->
   <script>
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
