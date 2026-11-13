@@ -6,9 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Private Bedrock Prox VC</title>
 
-  <!-- =====================================================================
-       FETCH INTERCEPTOR: Fixes locales/en.json 404s & SkyWay Token CORS
-       ===================================================================== -->
   <script>
     (function () {
       const CUSTOM_TOKEN_PROXY_URL = "https://vc-token-proxy.studnickihunter.workers.dev/";
@@ -45,7 +42,6 @@
       window.fetch = async function (input, init) {
         const url = typeof input === "string" ? input : (input && input.url ? input.url : "");
 
-        // 1. Instantly serve English locale JSON from memory
         if (url.includes("locales/") || url.endsWith(".json")) {
           return new Response(JSON.stringify(EN_LOCALE), {
             status: 200,
@@ -53,7 +49,6 @@
           });
         }
 
-        // 2. Route the SkyWay Token request through your Cloudflare Worker
         if (url.includes("hidden-waterfall-b30f.kkr1212.workers.dev/skyway-token")) {
           const parsedOriginal = new URL(url);
           const proxyTarget = CUSTOM_TOKEN_PROXY_URL.trim().replace(/\/+$/, "") + parsedOriginal.search;
@@ -75,31 +70,24 @@
     })();
   </script>
 
-  <!-- Font Awesome & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Silkscreen&display=swap" rel="stylesheet">
 
-  <!-- Icons -->
   <link rel="apple-touch-icon" sizes="180x180" href="https://mcproxvc.ovh/assets/apple-touch-icon-180x180-5_VT-3Kv.png">
   <link rel="icon" type="image/x-icon" href="https://mcproxvc.ovh/assets/favicon-D7ZGEpmL.ico">
   <link rel="icon" type="image/png" href="https://mcproxvc.ovh/assets/apple-touch-icon-180x180-5_VT-3Kv.png" sizes="180x180">
 
-  <!-- Prevent Ad / GPT crashes when scripts are absent -->
   <script>
     window.googletag = window.googletag || { cmd: [] };
     window.adsbygoogle = window.adsbygoogle || [];
   </script>
 
-  <!-- Stylesheets (Root Level) -->
   <link rel="stylesheet" href="./connect-CaBubcCo.css">
   <link rel="stylesheet" href="./style-CC25_3lO.css">
 
-  <!-- =====================================================================
-       PURPLE COZY COFFEE SHOP & NATURE THEME + HIDE USER INFO & PARTICIPANTS
-       ===================================================================== -->
   <style>
-    /* 1. Hide User Info (ID/GamerTag), Participant UI elements & Adblock Overlays while keeping DOM nodes alive */
-    #user-info-box,
+    /* Lock hidden elements off-screen so JS inline styles cannot make them visible */
+    #hidden-dom-sink,
     #id-disp,
     #my-id,
     #name-disp,
@@ -108,31 +96,33 @@
     #Members,
     #participant,
     #participant-list,
-    #participant-list-box,
     #w5z1n07jb,
     [id*="part" i],
     [class*="part" i] {
-      display: none !important;
-      visibility: hidden !important;
+      position: fixed !important;
+      left: -99999px !important;
+      top: -99999px !important;
+      width: 0 !important;
       height: 0 !important;
+      max-height: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
       border: none !important;
+      background: transparent !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
       overflow: hidden !important;
+      z-index: -9999 !important;
     }
 
-    /* 2. Cozy Purple Coffee Shop & Botanical Palette */
     :root {
-      --espresso-bg: #140f1d;
-      --plum-deep: #1e162b;
       --card-bg: rgba(34, 24, 48, 0.82);
       --panel-bg: rgba(23, 16, 34, 0.72);
       --lavender-main: #d8b4fe;
       --lavender-soft: #e9d5ff;
       --amethyst-border: rgba(186, 148, 240, 0.28);
-      --sage-green: #86efac;
-      --moss-accent: rgba(110, 168, 133, 0.35);
-      --warm-latte: #f5ebe6;
+      --warm-text: #f5ebe6;
       --amber-glow: rgba(245, 176, 108, 0.16);
     }
 
@@ -142,10 +132,9 @@
         radial-gradient(circle at 82% 20%, var(--amber-glow) 0%, transparent 40%),
         radial-gradient(circle at 50% 88%, rgba(76, 130, 98, 0.2) 0%, transparent 50%),
         linear-gradient(160deg, #120d1a 0%, #1d1429 50%, #151c19 100%) !important;
-      color: var(--warm-latte) !important;
+      color: var(--warm-text) !important;
     }
 
-    /* Loading screen styling */
     #loading-screen {
       background: linear-gradient(160deg, #140f1d 0%, #211730 100%) !important;
     }
@@ -153,7 +142,6 @@
       color: var(--lavender-main) !important;
     }
 
-    /* Main Cafe Glass Card */
     .glass-card {
       background: var(--card-bg) !important;
       border: 1px solid var(--amethyst-border) !important;
@@ -165,7 +153,6 @@
       overflow: hidden;
     }
 
-    /* Warm Cafe String Lights Header Glow */
     .glass-card::before {
       content: "";
       position: absolute;
@@ -177,41 +164,35 @@
       opacity: 0.85;
     }
 
-    /* Title Styling */
     #header-text {
       color: var(--lavender-soft) !important;
       text-shadow: 0 2px 14px rgba(192, 132, 252, 0.45), 0 0 4px rgba(245, 176, 108, 0.25) !important;
       letter-spacing: 0.03em;
     }
 
-    /* Sub-panels (Audio Controls) */
     .glass-card .bg-gray-800\/50 {
       background: var(--panel-bg) !important;
       border: 1px solid rgba(167, 139, 250, 0.2) !important;
       box-shadow: inset 0 2px 10px rgba(10, 6, 16, 0.45) !important;
     }
 
-    /* Language Switcher */
     #language-switcher {
       background-color: rgba(25, 18, 38, 0.9) !important;
       border-color: rgba(186, 148, 240, 0.35) !important;
-      color: var(--warm-latte) !important;
+      color: var(--warm-text) !important;
     }
     #language-switcher:focus {
       border-color: var(--lavender-main) !important;
     }
 
-    /* Labels & Info Text */
-    .info-text,
     label {
       color: #d8c8e8 !important;
     }
 
-    /* Inputs (Room ID & GamerTag) */
     .connect-input {
       background-color: rgba(19, 13, 29, 0.88) !important;
       border: 1px solid rgba(167, 139, 250, 0.3) !important;
-      color: var(--warm-latte) !important;
+      color: var(--warm-text) !important;
       border-radius: 0.65rem !important;
       transition: all 0.25s ease !important;
     }
@@ -224,7 +205,6 @@
       outline: none !important;
     }
 
-    /* Connect Button */
     #join {
       background: linear-gradient(135deg, #7e42d6 0%, #5b28a8 60%, #4a5e4d 100%) !important;
       border: 1px solid rgba(216, 180, 254, 0.45) !important;
@@ -237,7 +217,6 @@
       transform: translateY(-1px);
     }
 
-    /* Audio Control Buttons */
     #NonMute-btn,
     #SpeakerMute-btn,
     #noise-cancel {
@@ -245,7 +224,6 @@
       box-shadow: 0 4px 12px rgba(12, 8, 20, 0.4) !important;
     }
 
-    /* Volume Slider */
     #global-volume-controller {
       background: rgba(18, 12, 28, 0.75) !important;
       border-color: rgba(167, 139, 250, 0.25) !important;
@@ -259,7 +237,6 @@
       color: var(--lavender-soft) !important;
     }
 
-    /* Floating Firefly / Cafe Steam Spores Animation */
     @keyframes floatSpore {
       0%, 100% {
         transform: translateY(0px) translateX(0px) scale(1);
@@ -279,13 +256,11 @@
     }
   </style>
 
-  <!-- Main Voice Chat Module (Root Level) -->
   <script type="module" src="./connect-CzI-A9K_.js"></script>
 </head>
 
 <body class="min-h-screen flex flex-col relative selection:bg-purple-500 selection:text-white">
 
-  <!-- Loading Screen -->
   <div id="loading-screen" class="fixed inset-0 z-[9999] bg-gray-900 flex flex-col items-center justify-center transition-opacity duration-500">
     <div class="text-center">
       <i class="fa-solid fa-circle-notch fa-spin text-6xl text-purple-400 mb-4 drop-shadow-lg"></i>
@@ -293,7 +268,6 @@
     </div>
   </div>
 
-  <!-- Main Content Area -->
   <main class="flex-grow pt-24 px-4 pb-10 flex flex-col items-center justify-center min-h-screen z-10">
     <div class="w-full max-w-4xl fade-in">
       <div class="glass-card p-8 rounded-2xl relative">
@@ -315,13 +289,6 @@
         </div>
 
         <div class="space-y-6">
-          <!-- User Info Display (Hidden by CSS, kept in DOM so JS doesn't crash) -->
-          <div id="user-info-box" style="display: none !important;" class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 space-y-2">
-            <p id="id-disp" class="info-text">ID: <span id="my-id" class="text-white"></span></p>
-            <p id="name-disp" data-key="nameDisp" class="info-text">GamerTag: <span id="my-name" class="text-white"></span></p>
-            <p id="Menber-disp" data-key="menberDisp" class="info-text">Participants: <span id="Members" class="text-white">undefined</span></p>
-          </div>
-
           <!-- Connection Form -->
           <div class="space-y-4">
             <div>
@@ -381,44 +348,39 @@
 
           <div id="button-area"></div>
           <div id="remote-media-area"></div>
-
-          <!-- Participant List (Hidden) -->
-          <div id="participant-list-box" style="display: none !important;" class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 overflow-x-auto">
-            <h2 id="participant" data-key="participant" class="text-xl font-bold text-gray-200 mb-3">Participant List</h2>
-            <ul id="participant-list" class="space-y-2 text-gray-300 w-full"></ul>
-          </div>
-        </div>
-
-        <!-- Required DOM placeholders -->
-        <div style="display: none;">
-          <h2 id="android-app-title" data-key="androidAppTitle"></h2>
-          <span id="android-background" data-key="background"></span>
-          <div id="connect_ad_container"></div>
-          <button id="return-button" data-key="returnButton"></button>
-          <div id="android_popup">
-            <h2 id="android_popup_title" data-key="androidPopupTitle"></h2>
-            <p id="android_popup_text" data-key="androidPopupText"></p>
-            <p id="android_popup_text2" data-key="androidPopupText2"></p>
-            <button id="android_popup_close" data-key="androidPopupClose"></button>
-          </div>
         </div>
 
       </div>
     </div>
   </main>
 
+  <!-- Off-screen sink for hidden elements so connect.js never crashes or renders boxes -->
+  <div id="hidden-dom-sink" aria-hidden="true">
+    <p id="id-disp"><span id="my-id"></span></p>
+    <p id="name-disp" data-key="nameDisp"><span id="my-name"></span></p>
+    <p id="Menber-disp" data-key="menberDisp"><span id="Members"></span></p>
+    <h2 id="participant" data-key="participant"></h2>
+    <ul id="participant-list"></ul>
+    <h2 id="android-app-title" data-key="androidAppTitle"></h2>
+    <span id="android-background" data-key="background"></span>
+    <div id="connect_ad_container"></div>
+    <button id="return-button" data-key="returnButton"></button>
+    <div id="android_popup">
+      <h2 id="android_popup_title" data-key="androidPopupTitle"></h2>
+      <p id="android_popup_text" data-key="androidPopupText"></p>
+      <p id="android_popup_text2" data-key="androidPopupText2"></p>
+      <button id="android_popup_close" data-key="androidPopupClose"></button>
+    </div>
+  </div>
+
   <audio id="remoteAudioOutput" playsinline style="display: none;"></audio>
 
-  <!-- Cozy Coffee Shop & Botanical Nature Background -->
   <div id="background" class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
     <div class="absolute inset-0 bg-grid-pattern opacity-15"></div>
-
-    <!-- Ambient Purple, Espresso Amber & Forest Moss Glows -->
     <div class="absolute -top-16 left-1/5 w-96 h-96 rounded-full filter blur-3xl opacity-25" style="background: #9333ea;"></div>
     <div class="absolute top-1/3 right-12 w-80 h-80 rounded-full filter blur-3xl opacity-15" style="background: #f59e0b;"></div>
     <div class="absolute -bottom-20 left-1/3 w-96 h-96 rounded-full filter blur-3xl opacity-20" style="background: #4ade80;"></div>
 
-    <!-- Top-Left Hanging Botanical Ivy Silhouette -->
     <svg class="absolute top-0 left-0 w-64 h-64 opacity-25" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M10 0 C25 50, 5 95, 35 145 C50 170, 40 190, 55 200" stroke="#86efac" stroke-width="2" fill="none"/>
       <path d="M55 0 C65 40, 45 80, 75 120" stroke="#c084fc" stroke-width="1.5" fill="none"/>
@@ -429,7 +391,6 @@
       <ellipse cx="68" cy="95" rx="11" ry="5" transform="rotate(-20 68 95)" fill="#d8b4fe"/>
     </svg>
 
-    <!-- Bottom-Right Botanical Fern Silhouette -->
     <svg class="absolute bottom-0 right-0 w-72 h-72 opacity-20" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M190 200 C170 150, 145 110, 110 70" stroke="#86efac" stroke-width="2.5" fill="none"/>
       <ellipse cx="165" cy="160" rx="16" ry="7" transform="rotate(-35 165 160)" fill="#86efac"/>
@@ -438,7 +399,6 @@
       <ellipse cx="120" cy="88" rx="12" ry="5" transform="rotate(20 120 88)" fill="#d8b4fe"/>
     </svg>
 
-    <!-- Warm Firefly & Cafe Glow Spores -->
     <div class="spore" style="width: 6px; height: 6px; background: #fde68a; top: 22%; left: 14%; animation-delay: 0s;"></div>
     <div class="spore" style="width: 8px; height: 8px; background: #d8b4fe; top: 68%; left: 20%; animation-delay: 2s;"></div>
     <div class="spore" style="width: 5px; height: 5px; background: #86efac; top: 35%; left: 82%; animation-delay: 4s;"></div>
@@ -450,11 +410,9 @@
   <div id="sidebar" style="display: none;"></nav>
   <footer id="footer" style="display: none;"></footer>
 
-  <!-- Helper Scripts (Root Level) -->
   <script src="./msgpack.min.js"></script>
   <script src="./vendor-script.js"></script>
 
-  <!-- Failsafe Loading Screen Dismissal + Lock Custom Title -->
   <script>
     window.addEventListener('DOMContentLoaded', () => {
       const headerEl = document.getElementById('header-text');
