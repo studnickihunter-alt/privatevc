@@ -11,7 +11,6 @@
        ===================================================================== -->
   <script>
     (function () {
-      // PASTE YOUR CLOUDFLARE WORKER URL INSIDE THE QUOTES BELOW:
       const CUSTOM_TOKEN_PROXY_URL = "https://vc-token-proxy.studnickihunter.workers.dev/";
 
       const EN_LOCALE = {
@@ -96,10 +95,15 @@
   <link rel="stylesheet" href="./style-CC25_3lO.css">
 
   <!-- =====================================================================
-       PURPLE COZY COFFEE SHOP & NATURE THEME + HIDE PARTICIPANTS
+       PURPLE COZY COFFEE SHOP & NATURE THEME + HIDE USER INFO & PARTICIPANTS
        ===================================================================== -->
   <style>
-    /* 1. Hide all Participant UI elements & Adblock Overlays while keeping DOM nodes alive */
+    /* 1. Hide User Info (ID/GamerTag), Participant UI elements & Adblock Overlays while keeping DOM nodes alive */
+    #user-info-box,
+    #id-disp,
+    #my-id,
+    #name-disp,
+    #my-name,
     #Menber-disp,
     #Members,
     #participant,
@@ -180,7 +184,7 @@
       letter-spacing: 0.03em;
     }
 
-    /* Sub-panels (User Info & Audio Controls) */
+    /* Sub-panels (Audio Controls) */
     .glass-card .bg-gray-800\/50 {
       background: var(--panel-bg) !important;
       border: 1px solid rgba(167, 139, 250, 0.2) !important;
@@ -294,13 +298,6 @@
     <div class="w-full max-w-4xl fade-in">
       <div class="glass-card p-8 rounded-2xl relative">
 
-        <!-- Subtle Botanical Vine & Coffee Icon Accent in Top-Left Corner -->
-        <div class="flex items-center gap-2 text-xs mb-2 opacity-75 select-none pointer-events-none" style="color: #a7c4a0;">
-          <i class="fa-solid fa-mug-hot" style="color: #d8b4fe;"></i>
-          <i class="fa-solid fa-leaf" style="color: #86efac;"></i>
-          <span class="tracking-widest uppercase font-semibold" style="color: #cbb2e8; font-size: 0.7rem;">Cozy Lounge</span>
-        </div>
-
         <button onclick="location.href='https://mcproxvc.ovh/'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
           <i class="fa-solid fa-xmark text-2xl"></i>
         </button>
@@ -318,8 +315,8 @@
         </div>
 
         <div class="space-y-6">
-          <!-- User Info Display -->
-          <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 space-y-2">
+          <!-- User Info Display (Hidden by CSS, kept in DOM so JS doesn't crash) -->
+          <div id="user-info-box" style="display: none !important;" class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 space-y-2">
             <p id="id-disp" class="info-text">ID: <span id="my-id" class="text-white"></span></p>
             <p id="name-disp" data-key="nameDisp" class="info-text">GamerTag: <span id="my-name" class="text-white"></span></p>
             <p id="Menber-disp" data-key="menberDisp" class="info-text">Participants: <span id="Members" class="text-white">undefined</span></p>
@@ -386,7 +383,7 @@
           <div id="remote-media-area"></div>
 
           <!-- Participant List (Hidden) -->
-          <div id="participant-list-box" class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 overflow-x-auto">
+          <div id="participant-list-box" style="display: none !important;" class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 overflow-x-auto">
             <h2 id="participant" data-key="participant" class="text-xl font-bold text-gray-200 mb-3">Participant List</h2>
             <ul id="participant-list" class="space-y-2 text-gray-300 w-full"></ul>
           </div>
