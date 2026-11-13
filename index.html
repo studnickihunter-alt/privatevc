@@ -4,18 +4,18 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MCBE ProxVC - Connect</title>
+  <title>Private Bedrock Prox VC</title>
 
   <!-- =====================================================================
        FETCH INTERCEPTOR: Fixes locales/en.json 404s & SkyWay Token CORS
        ===================================================================== -->
   <script>
     (function () {
-      // If public proxies are blocked (403), paste your Cloudflare Worker URL inside the quotes below (see Step 2):
+      // PASTE YOUR CLOUDFLARE WORKER URL INSIDE THE QUOTES BELOW:
       const CUSTOM_TOKEN_PROXY_URL = "https://vc-token-proxy.studnickihunter.workers.dev/";
 
       const EN_LOCALE = {
-        headerText: "MCBE ProxVC",
+        headerText: "Private Bedrock Prox VC",
         nameDisp: "GamerTag: ",
         menberDisp: "Participants: ",
         address: "Room ID: ",
@@ -46,7 +46,7 @@
       window.fetch = async function (input, init) {
         const url = typeof input === "string" ? input : (input && input.url ? input.url : "");
 
-        // 1. Instantly serve English locale JSON from memory (eliminates 404/503 & JSON SyntaxError)
+        // 1. Instantly serve English locale JSON from memory
         if (url.includes("locales/") || url.endsWith(".json")) {
           return new Response(JSON.stringify(EN_LOCALE), {
             status: 200,
@@ -54,30 +54,21 @@
           });
         }
 
-        // 2. Intercept the SkyWay Token request to bypass CORS on GitHub Pages
+        // 2. Route the SkyWay Token request through your Cloudflare Worker
         if (url.includes("hidden-waterfall-b30f.kkr1212.workers.dev/skyway-token")) {
-          // If you added a Cloudflare Worker URL above, use it first
-          if (CUSTOM_TOKEN_PROXY_URL.trim() !== "") {
-            return originalFetch(CUSTOM_TOKEN_PROXY_URL.trim(), init);
+          const parsedOriginal = new URL(url);
+          const proxyTarget = CUSTOM_TOKEN_PROXY_URL.trim().replace(/\/+$/, "") + parsedOriginal.search;
+
+          if (input instanceof Request) {
+            const clonedInit = {
+              method: input.method,
+              headers: input.headers,
+              body: input.method !== "GET" && input.method !== "HEAD" ? await input.clone().arrayBuffer() : undefined
+            };
+            return originalFetch(proxyTarget, clonedInit);
           }
 
-          // Otherwise, try public CORS proxies automatically
-          const proxies = [
-            "https://corsproxy.io/?url=" + encodeURIComponent(url),
-            "https://api.allorigins.win/raw?url=" + encodeURIComponent(url),
-            "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(url)
-          ];
-
-          for (const proxyUrl of proxies) {
-            try {
-              const res = await originalFetch(proxyUrl, init);
-              if (res.ok) {
-                return res;
-              }
-            } catch (err) {
-              console.warn("Proxy attempt failed, trying next:", proxyUrl);
-            }
-          }
+          return originalFetch(proxyTarget, init);
         }
 
         return originalFetch(input, init);
@@ -104,8 +95,11 @@
   <link rel="stylesheet" href="./connect-CaBubcCo.css">
   <link rel="stylesheet" href="./style-CC25_3lO.css">
 
-  <!-- Hide all Participant UI elements & Adblock Overlays while keeping DOM nodes alive for JS -->
+  <!-- =====================================================================
+       PURPLE COZY COFFEE SHOP & NATURE THEME + HIDE PARTICIPANTS
+       ===================================================================== -->
   <style>
+    /* 1. Hide all Participant UI elements & Adblock Overlays while keeping DOM nodes alive */
     #Menber-disp,
     #Members,
     #participant,
@@ -122,33 +116,198 @@
       border: none !important;
       overflow: hidden !important;
     }
+
+    /* 2. Cozy Purple Coffee Shop & Botanical Palette */
+    :root {
+      --espresso-bg: #140f1d;
+      --plum-deep: #1e162b;
+      --card-bg: rgba(34, 24, 48, 0.82);
+      --panel-bg: rgba(23, 16, 34, 0.72);
+      --lavender-main: #d8b4fe;
+      --lavender-soft: #e9d5ff;
+      --amethyst-border: rgba(186, 148, 240, 0.28);
+      --sage-green: #86efac;
+      --moss-accent: rgba(110, 168, 133, 0.35);
+      --warm-latte: #f5ebe6;
+      --amber-glow: rgba(245, 176, 108, 0.16);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 18% 15%, rgba(147, 102, 214, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 82% 20%, var(--amber-glow) 0%, transparent 40%),
+        radial-gradient(circle at 50% 88%, rgba(76, 130, 98, 0.2) 0%, transparent 50%),
+        linear-gradient(160deg, #120d1a 0%, #1d1429 50%, #151c19 100%) !important;
+      color: var(--warm-latte) !important;
+    }
+
+    /* Loading screen styling */
+    #loading-screen {
+      background: linear-gradient(160deg, #140f1d 0%, #211730 100%) !important;
+    }
+    #loading-screen i {
+      color: var(--lavender-main) !important;
+    }
+
+    /* Main Cafe Glass Card */
+    .glass-card {
+      background: var(--card-bg) !important;
+      border: 1px solid var(--amethyst-border) !important;
+      box-shadow:
+        0 20px 50px rgba(8, 5, 14, 0.75),
+        0 0 35px rgba(155, 107, 230, 0.14),
+        inset 0 1px 0 rgba(255, 238, 224, 0.12) !important;
+      backdrop-filter: blur(16px) !important;
+      overflow: hidden;
+    }
+
+    /* Warm Cafe String Lights Header Glow */
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #6e9e75, #c084fc, #f3b37a, #c084fc, #6e9e75);
+      opacity: 0.85;
+    }
+
+    /* Title Styling */
+    #header-text {
+      color: var(--lavender-soft) !important;
+      text-shadow: 0 2px 14px rgba(192, 132, 252, 0.45), 0 0 4px rgba(245, 176, 108, 0.25) !important;
+      letter-spacing: 0.03em;
+    }
+
+    /* Sub-panels (User Info & Audio Controls) */
+    .glass-card .bg-gray-800\/50 {
+      background: var(--panel-bg) !important;
+      border: 1px solid rgba(167, 139, 250, 0.2) !important;
+      box-shadow: inset 0 2px 10px rgba(10, 6, 16, 0.45) !important;
+    }
+
+    /* Language Switcher */
+    #language-switcher {
+      background-color: rgba(25, 18, 38, 0.9) !important;
+      border-color: rgba(186, 148, 240, 0.35) !important;
+      color: var(--warm-latte) !important;
+    }
+    #language-switcher:focus {
+      border-color: var(--lavender-main) !important;
+    }
+
+    /* Labels & Info Text */
+    .info-text,
+    label {
+      color: #d8c8e8 !important;
+    }
+
+    /* Inputs (Room ID & GamerTag) */
+    .connect-input {
+      background-color: rgba(19, 13, 29, 0.88) !important;
+      border: 1px solid rgba(167, 139, 250, 0.3) !important;
+      color: var(--warm-latte) !important;
+      border-radius: 0.65rem !important;
+      transition: all 0.25s ease !important;
+    }
+    .connect-input::placeholder {
+      color: rgba(196, 175, 219, 0.45) !important;
+    }
+    .connect-input:focus {
+      border-color: #c084fc !important;
+      box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.2), 0 0 15px rgba(134, 239, 172, 0.12) !important;
+      outline: none !important;
+    }
+
+    /* Connect Button */
+    #join {
+      background: linear-gradient(135deg, #7e42d6 0%, #5b28a8 60%, #4a5e4d 100%) !important;
+      border: 1px solid rgba(216, 180, 254, 0.45) !important;
+      box-shadow: 0 8px 20px rgba(109, 40, 217, 0.35) !important;
+      color: #fdf8ff !important;
+    }
+    #join:hover {
+      background: linear-gradient(135deg, #9055e8 0%, #6d34c2 60%, #58705c 100%) !important;
+      box-shadow: 0 10px 24px rgba(139, 92, 246, 0.5) !important;
+      transform: translateY(-1px);
+    }
+
+    /* Audio Control Buttons */
+    #NonMute-btn,
+    #SpeakerMute-btn,
+    #noise-cancel {
+      border-color: rgba(186, 148, 240, 0.3) !important;
+      box-shadow: 0 4px 12px rgba(12, 8, 20, 0.4) !important;
+    }
+
+    /* Volume Slider */
+    #global-volume-controller {
+      background: rgba(18, 12, 28, 0.75) !important;
+      border-color: rgba(167, 139, 250, 0.25) !important;
+    }
+    #global-volume-range {
+      accent-color: #c084fc !important;
+    }
+    #global-volume-value {
+      background: rgba(34, 24, 48, 0.9) !important;
+      border-color: rgba(167, 139, 250, 0.35) !important;
+      color: var(--lavender-soft) !important;
+    }
+
+    /* Floating Firefly / Cafe Steam Spores Animation */
+    @keyframes floatSpore {
+      0%, 100% {
+        transform: translateY(0px) translateX(0px) scale(1);
+        opacity: 0.25;
+      }
+      50% {
+        transform: translateY(-28px) translateX(12px) scale(1.25);
+        opacity: 0.7;
+      }
+    }
+    .spore {
+      position: absolute;
+      border-radius: 9999px;
+      pointer-events: none;
+      filter: blur(1px);
+      animation: floatSpore 8s ease-in-out infinite;
+    }
   </style>
 
   <!-- Main Voice Chat Module (Root Level) -->
   <script type="module" src="./connect-CzI-A9K_.js"></script>
 </head>
 
-<body class="min-h-screen flex flex-col relative selection:bg-green-500 selection:text-white">
+<body class="min-h-screen flex flex-col relative selection:bg-purple-500 selection:text-white">
 
   <!-- Loading Screen -->
   <div id="loading-screen" class="fixed inset-0 z-[9999] bg-gray-900 flex flex-col items-center justify-center transition-opacity duration-500">
     <div class="text-center">
-      <i class="fa-solid fa-circle-notch fa-spin text-6xl text-green-500 mb-4 shadow-green-500/50 drop-shadow-lg"></i>
+      <i class="fa-solid fa-circle-notch fa-spin text-6xl text-purple-400 mb-4 drop-shadow-lg"></i>
       <h2 class="text-2xl font-bold text-white pixel-font tracking-widest animate-pulse">LOADING</h2>
     </div>
   </div>
 
   <!-- Main Content Area -->
-  <main class="flex-grow pt-32 px-4 pb-10 flex flex-col items-center justify-center min-h-screen z-10">
+  <main class="flex-grow pt-24 px-4 pb-10 flex flex-col items-center justify-center min-h-screen z-10">
     <div class="w-full max-w-4xl fade-in">
       <div class="glass-card p-8 rounded-2xl relative">
+
+        <!-- Subtle Botanical Vine & Coffee Icon Accent in Top-Left Corner -->
+        <div class="flex items-center gap-2 text-xs mb-2 opacity-75 select-none pointer-events-none" style="color: #a7c4a0;">
+          <i class="fa-solid fa-mug-hot" style="color: #d8b4fe;"></i>
+          <i class="fa-solid fa-leaf" style="color: #86efac;"></i>
+          <span class="tracking-widest uppercase font-semibold" style="color: #cbb2e8; font-size: 0.7rem;">Cozy Lounge</span>
+        </div>
+
         <button onclick="location.href='https://mcproxvc.ovh/'" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
           <i class="fa-solid fa-xmark text-2xl"></i>
         </button>
 
-        <div class="flex justify-between items-end mb-6 border-b border-gray-600/50 pb-2">
-          <h2 class="text-4xl font-bold pixel-font text-green-400" id="header-text" data-key="headerText">MCBE ProxVC</h2>
-          <select id="language-switcher" class="bg-gray-800 text-gray-300 border border-gray-600 rounded px-3 py-1 text-sm focus:outline-none focus:border-green-400 transition">
+        <div class="flex flex-wrap justify-between items-end gap-3 mb-6 border-b border-purple-400/20 pb-3">
+          <h2 class="text-3xl sm:text-4xl font-bold pixel-font" id="header-text" data-key="headerText">Private Bedrock Prox VC</h2>
+          <select id="language-switcher" class="bg-gray-800 text-gray-300 border border-gray-600 rounded px-3 py-1 text-sm focus:outline-none transition">
             <option value="en">English</option>
             <option value="ja">日本語</option>
             <option value="zh">中文 (简体)</option>
@@ -208,15 +367,15 @@
                   <label data-key="masterVolumeLabel" class="text-xs text-gray-400 font-bold uppercase tracking-wider whitespace-nowrap">Volume</label>
                   <div class="flex items-center gap-3 flex-1">
                     <span id="global-volume-icon" class="text-xl w-6 text-center">🔊</span>
-                    <input id="global-volume-range" type="range" min="0" max="200" value="100" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500 hover:accent-blue-400 transition-colors">
-                    <span id="global-volume-value" class="text-sm font-mono font-bold text-blue-300 w-8 text-center bg-gray-800/80 rounded py-1 border border-gray-700">100</span>
+                    <input id="global-volume-range" type="range" min="0" max="200" value="100" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer transition-colors">
+                    <span id="global-volume-value" class="text-sm font-mono font-bold w-8 text-center rounded py-1 border">100</span>
                     <button id="global-volume-reset" title="Reset to 100" class="text-gray-400 hover:text-white transition cursor-pointer text-xl font-bold flex items-center justify-center w-6 h-6">↺</button>
                   </div>
                 </div>
               </div>
 
               <div class="h-14 w-full md:w-auto md:ml-auto">
-                <button id="join" class="w-full md:w-auto h-full px-8 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg shadow-lg shadow-blue-500/20 transition flex items-center justify-center gap-2 whitespace-nowrap border border-blue-400/50">
+                <button id="join" class="w-full md:w-auto h-full px-8 text-white font-bold rounded-lg transition flex items-center justify-center gap-2 whitespace-nowrap">
                   <span data-key="join">Connect</span>
                 </button>
               </div>
@@ -252,21 +411,66 @@
   </main>
 
   <audio id="remoteAudioOutput" playsinline style="display: none;"></audio>
-  <div id="background" class="fixed inset-0 z-[-1]">
-    <div class="absolute inset-0 bg-grid-pattern opacity-30"></div>
-    <div class="absolute top-0 left-1/4 w-96 h-96 bg-green-600 rounded-full filter blur-3xl opacity-20"></div>
+
+  <!-- Cozy Coffee Shop & Botanical Nature Background -->
+  <div id="background" class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+    <div class="absolute inset-0 bg-grid-pattern opacity-15"></div>
+
+    <!-- Ambient Purple, Espresso Amber & Forest Moss Glows -->
+    <div class="absolute -top-16 left-1/5 w-96 h-96 rounded-full filter blur-3xl opacity-25" style="background: #9333ea;"></div>
+    <div class="absolute top-1/3 right-12 w-80 h-80 rounded-full filter blur-3xl opacity-15" style="background: #f59e0b;"></div>
+    <div class="absolute -bottom-20 left-1/3 w-96 h-96 rounded-full filter blur-3xl opacity-20" style="background: #4ade80;"></div>
+
+    <!-- Top-Left Hanging Botanical Ivy Silhouette -->
+    <svg class="absolute top-0 left-0 w-64 h-64 opacity-25" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 0 C25 50, 5 95, 35 145 C50 170, 40 190, 55 200" stroke="#86efac" stroke-width="2" fill="none"/>
+      <path d="M55 0 C65 40, 45 80, 75 120" stroke="#c084fc" stroke-width="1.5" fill="none"/>
+      <ellipse cx="22" cy="40" rx="12" ry="6" transform="rotate(-25 22 40)" fill="#6ee7b7"/>
+      <ellipse cx="18" cy="80" rx="14" ry="7" transform="rotate(20 18 80)" fill="#86efac"/>
+      <ellipse cx="32" cy="118" rx="12" ry="6" transform="rotate(-15 32 118)" fill="#c084fc"/>
+      <ellipse cx="62" cy="55" rx="10" ry="5" transform="rotate(30 62 55)" fill="#a7f3d0"/>
+      <ellipse cx="68" cy="95" rx="11" ry="5" transform="rotate(-20 68 95)" fill="#d8b4fe"/>
+    </svg>
+
+    <!-- Bottom-Right Botanical Fern Silhouette -->
+    <svg class="absolute bottom-0 right-0 w-72 h-72 opacity-20" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M190 200 C170 150, 145 110, 110 70" stroke="#86efac" stroke-width="2.5" fill="none"/>
+      <ellipse cx="165" cy="160" rx="16" ry="7" transform="rotate(-35 165 160)" fill="#86efac"/>
+      <ellipse cx="150" cy="135" rx="15" ry="6" transform="rotate(25 150 135)" fill="#c084fc"/>
+      <ellipse cx="135" cy="110" rx="14" ry="6" transform="rotate(-30 135 110)" fill="#6ee7b7"/>
+      <ellipse cx="120" cy="88" rx="12" ry="5" transform="rotate(20 120 88)" fill="#d8b4fe"/>
+    </svg>
+
+    <!-- Warm Firefly & Cafe Glow Spores -->
+    <div class="spore" style="width: 6px; height: 6px; background: #fde68a; top: 22%; left: 14%; animation-delay: 0s;"></div>
+    <div class="spore" style="width: 8px; height: 8px; background: #d8b4fe; top: 68%; left: 20%; animation-delay: 2s;"></div>
+    <div class="spore" style="width: 5px; height: 5px; background: #86efac; top: 35%; left: 82%; animation-delay: 4s;"></div>
+    <div class="spore" style="width: 7px; height: 7px; background: #fbcfe8; top: 75%; left: 76%; animation-delay: 1.5s;"></div>
+    <div class="spore" style="width: 6px; height: 6px; background: #fde68a; top: 18%; left: 65%; animation-delay: 3.2s;"></div>
   </div>
+
   <nav id="nav" style="display: none;"></nav>
   <div id="sidebar" style="display: none;"></nav>
-  <footer id="footer" style="display: none;"></</footer>
+  <footer id="footer" style="display: none;"></footer>
 
   <!-- Helper Scripts (Root Level) -->
   <script src="./msgpack.min.js"></script>
   <script src="./vendor-script.js"></script>
 
-  <!-- Failsafe Loading Screen Dismissal -->
+  <!-- Failsafe Loading Screen Dismissal + Lock Custom Title -->
   <script>
     window.addEventListener('DOMContentLoaded', () => {
+      const headerEl = document.getElementById('header-text');
+      if (headerEl) {
+        headerEl.textContent = 'Private Bedrock Prox VC';
+        const observer = new MutationObserver(() => {
+          if (headerEl.textContent !== 'Private Bedrock Prox VC') {
+            headerEl.textContent = 'Private Bedrock Prox VC';
+          }
+        });
+        observer.observe(headerEl, { childList: true, characterData: true, subtree: true });
+      }
+
       setTimeout(() => {
         const loader = document.getElementById('loading-screen');
         if (loader) {
