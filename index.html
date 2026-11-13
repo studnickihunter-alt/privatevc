@@ -6,6 +6,85 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MCBE ProxVC - Connect</title>
 
+  <!-- =====================================================================
+       FETCH INTERCEPTOR: Fixes locales/en.json 404s & SkyWay Token CORS
+       ===================================================================== -->
+  <script>
+    (function () {
+      // If public proxies are blocked (403), paste your Cloudflare Worker URL inside the quotes below (see Step 2):
+      const CUSTOM_TOKEN_PROXY_URL = "";
+
+      const EN_LOCALE = {
+        headerText: "MCBE ProxVC",
+        nameDisp: "GamerTag: ",
+        menberDisp: "Participants: ",
+        address: "Room ID: ",
+        gamertag: "GamerTag: ",
+        nonMuteBtn: "Mute",
+        nonMuteBtnLabel: "Mute",
+        speakerMuteBtn: "Undeafened",
+        speakerUnmuted: "Undeafened",
+        ncLabel: "Noise Cancellation",
+        ncStatusOff: "OFF",
+        ncStatusOn: "ON",
+        masterVolumeLabel: "Master Volume",
+        join: "Connect",
+        leave: "Disconnect",
+        participant: "Participant List",
+        androidAppTitle: "Android App Version",
+        background: "Background support",
+        androidAppDownloadBtn: "Download App Version",
+        returnButton: "< return",
+        androidPopupTitle: "Recommended App Version",
+        androidPopupText: "Note: Browser version does not support background playback.",
+        androidPopupText2: "The app version keeps the call active even when the screen is closed!",
+        androidPopupClose: "close"
+      };
+
+      const originalFetch = window.fetch.bind(window);
+
+      window.fetch = async function (input, init) {
+        const url = typeof input === "string" ? input : (input && input.url ? input.url : "");
+
+        // 1. Instantly serve English locale JSON from memory (eliminates 404/503 & JSON SyntaxError)
+        if (url.includes("locales/") || url.endsWith(".json")) {
+          return new Response(JSON.stringify(EN_LOCALE), {
+            status: 200,
+            headers: { "Content-Type": "application/json" }
+          });
+        }
+
+        // 2. Intercept the SkyWay Token request to bypass CORS on GitHub Pages
+        if (url.includes("hidden-waterfall-b30f.kkr1212.workers.dev/skyway-token")) {
+          // If you added a Cloudflare Worker URL above, use it first
+          if (CUSTOM_TOKEN_PROXY_URL.trim() !== "") {
+            return originalFetch(CUSTOM_TOKEN_PROXY_URL.trim(), init);
+          }
+
+          // Otherwise, try public CORS proxies automatically
+          const proxies = [
+            "https://corsproxy.io/?url=" + encodeURIComponent(url),
+            "https://api.allorigins.win/raw?url=" + encodeURIComponent(url),
+            "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(url)
+          ];
+
+          for (const proxyUrl of proxies) {
+            try {
+              const res = await originalFetch(proxyUrl, init);
+              if (res.ok) {
+                return res;
+              }
+            } catch (err) {
+              console.warn("Proxy attempt failed, trying next:", proxyUrl);
+            }
+          }
+        }
+
+        return originalFetch(input, init);
+      };
+    })();
+  </script>
+
   <!-- Font Awesome & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Silkscreen&display=swap" rel="stylesheet">
@@ -178,8 +257,8 @@
     <div class="absolute top-0 left-1/4 w-96 h-96 bg-green-600 rounded-full filter blur-3xl opacity-20"></div>
   </div>
   <nav id="nav" style="display: none;"></nav>
-  <div id="sidebar" style="display: none;"></div>
-  <footer id="footer" style="display: none;"></footer>
+  <div id="sidebar" style="display: none;"></nav>
+  <footer id="footer" style="display: none;"></</footer>
 
   <!-- Helper Scripts (Root Level) -->
   <script src="./msgpack.min.js"></script>
